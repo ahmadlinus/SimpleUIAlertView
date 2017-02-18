@@ -3,7 +3,7 @@ Apple deprecated UIAlertView, and this is a simple implementation of UIAlertView
 
 ```objc 
 SimpleAlertView* sav = [[SimpleAlertView alloc] initWithTitle:@"test" message:@"test me!" delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@[@"say hi", @"say goodbye"] alertID:nil];
-    [sav show];
+[sav show];
 ```
 
 you also have to include the class SimpleAlertView in the list of your class delegates.
@@ -11,9 +11,9 @@ you also have to include the class SimpleAlertView in the list of your class del
 ```objc
 @interface ViewController : UIViewController <SimpleAlertDelegate>
 ```
-and you're done. But do not forget to pass ** self ** as the delegate when initializing, because it wouldn't work in that case.
+and you're done. But do not forget to pass _**self**_ as the delegate when initializing, because it wouldn't work in that case.
 
-The minor change I have applied is the concept of an alertID. This is a patch to the problem of having multiple UIAlertView at different points in the same class, when implementing the delegate methods you wouldn't know which one caused it. So including an alertID will stop this issue and you can handle as many alert view actions as you want in the delegate method. If you only have one alert in your view controller, you don't need to set it, and sending ** nil ** would just be enough to set your alertID to ** default **. 
+The minor change I have applied is the concept of an alertID. This is a patch to the problem of having multiple UIAlertView at different points in the same class, when implementing the delegate methods you wouldn't know which one caused it. So including an alertID will stop this issue and you can handle as many alert view actions as you want in the delegate method. If you only have one alert in your view controller, you don't need to set it, and sending ** nil ** would just be enough to set your alertID to _**default**_. 
 
 This is a simple implementation for the delegate method:
 
