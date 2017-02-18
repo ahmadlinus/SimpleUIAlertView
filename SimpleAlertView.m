@@ -23,52 +23,50 @@
         self.alertID = @"default";
     
     self.alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-
+    
+    self.buttonTitles = [NSMutableArray array];
+    [self.buttonTitles addObject:cancelTitle];
+    
     // adding the row of buttons first
-    for (int i = 0; i < otherTitles.count; i++) {
-        
-        UIAlertAction* action = [UIAlertAction actionWithTitle:[otherTitles objectAtIndex:i] style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
-            
-            // dismissing the alert view, then calling the delegate on completion
-            [self dismissViewControllerAnimated:YES completion:
-             ^(void) {}];
-            
-            // calling delegate method, if it exists
-            if ([self.delegate respondsToSelector:@selector(didDismissWithButtonIndex:alertID:)]){
-                [self.delegate didDismissWithButtonIndex:(i + 1) alertID:self.alertID];
-            }
-        }];
-        
-        [self.alert addAction:action];
-    }
+    for (int i = 0; i < otherTitles.count; i++)
+        [self addButtonWithTitle:[otherTitles objectAtIndex:i] WithIndex:(i + 1) WithActionStyle:UIAlertActionStyleDefault];
+    [self addButtonWithTitle:cancelTitle WithIndex:0 WithActionStyle:UIAlertActionStyleCancel];
     
-    // adding the Cancel button after all
-    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:cancelTitle style:UIAlertActionStyleCancel handler:^(UIAlertAction* action) {
-        
-        // dismissing the alert view, then calling the delegate on completion
-        [self dismissViewControllerAnimated:YES completion:
-         ^(void) {}];
-        
-        // calling delegate method, if it exists
-        if ([self.delegate respondsToSelector:@selector(didDismissWithButtonIndex:alertID:)]) {
-            [self.delegate didDismissWithButtonIndex:0 alertID:self.alertID];
-        }
-        
-    }];
-    
-    [self.alert addAction:cancelAction];
     return self;
 }
 
-// group setting of alert properties
-// the input dictionary will be like: @{@"title" : @"hi", @"message" : @"hello world", @"alertID" : @"id" }
-- (void) setPropertyUsingDictionary:(NSDictionary *)propertyDictionary {
-    if ([propertyDictionary objectForKey:@"title"])
-        self.viewTitle = [propertyDictionary objectForKey:@"title"];
-    if ([propertyDictionary objectForKey:@"message"])
-        self.message = [propertyDictionary objectForKey:@"message"];
-    if ([propertyDictionary objectForKey:@"alertID"])
-        self.alertID = [propertyDictionary objectForKey:@"alertID"];
+- (void) addButtonWithTitle:(NSString *)title WithIndex:(int) index WithActionStyle: (UIAlertActionStyle) style {
+    [self.buttonTitles addObject:title];
+    
+    UIAlertAction* action = [UIAlertAction actionWithTitle:title style:style handler:^(UIAlertAction* action) {
+        
+        // dismissing the alert view, then calling the delegate on completion
+        [self dismissViewControllerAnimated:YES completion:
+        ^(void) {}];
+        self.alert = nil;
+        
+        // calling delegate method, if it exists
+        if ([self.delegate respondsToSelector:@selector(didDismissWithButtonIndex:alertID:)])
+            [self.delegate didDismissWithButtonIndex:index alertID:self.alertID];
+    }];
+    
+    [self.alert addAction:action];
+}
+
+- (void) addButtonWithTitle:(NSString *)title {
+    [self addButtonWithTitle:title WithIndex:self.numberOfButtons - 1 WithActionStyle:UIAlertActionStyleDefault];
+}
+
+- (NSString*) buttonTitleAtIndex: (int) index{
+    return [self.buttonTitles objectAtIndex:index];
+}
+
+- (int) numberOfButtons {
+    return (int) self.buttonTitles.count;
+}
+
+- (int) cancelButtonIndex {
+    return 0;
 }
 
 // show the alert
